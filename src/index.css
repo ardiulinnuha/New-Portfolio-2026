@@ -1,0 +1,381 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Mobile base scroll padding for sticky header compensation */
+    scroll-padding-top: 4.75rem;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      scroll-padding-top: 5.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    html {
+      scroll-padding-top: 5.75rem;
+    }
+  }
+
+  /* Consistent scroll margin for targetable ID sections */
+  section[id],
+  div[id].scroll-target {
+    scroll-margin-top: 4.75rem;
+  }
+
+  @media (min-width: 640px) {
+    section[id],
+    div[id].scroll-target {
+      scroll-margin-top: 5.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    section[id],
+    div[id].scroll-target {
+      scroll-margin-top: 5.75rem;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #050505;
+    color: #e5e7eb;
+  }
+  
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f1f1f;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+/* Scrollbar Hide utilities */
+.scrollbar-hide,
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+/* Immersive UI Glow & Card styles */
+.glow-card {
+  position: relative;
+  background: #0f0f0f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glow-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px -10px rgba(168, 85, 247, 0.2);
+}
+
+.immersive-gradient-border {
+  background: linear-gradient(135deg, #06b6d4, #9333ea);
+  padding: 1px;
+}
+
+.glow-purple {
+  box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.35);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 40px -10px rgba(6, 182, 212, 0.35);
+}
+
+/* Section Separator */
+.section-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Casual Media Copy & Drag Protection */
+img, 
+video, 
+.media-protected,
+[data-protected-media="true"] {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Video Player Download Button Suppression */
+video::-internal-media-controls-download-button {
+  display: none !important;
+}
+video::-webkit-media-controls-enclosure {
+  overflow: hidden;
+}
+video::-webkit-media-controls-panel {
+  width: calc(100% + 30px);
+}
+
+/* Subtle Spatial Grid (Dark Mode) */
+.bg-grid-pattern {
+  background-size: 36px 36px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+}
+
+.bg-radial-gradient {
+  background: radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.18) 0%, rgba(6, 182, 212, 0.08) 40%, transparent 70%);
+}
+
+/* HD Mode Dynamic Visual Enhancements */
+@keyframes hdGridDrift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 60px 60px;
+  }
+}
+
+@keyframes hdAuroraPulse {
+  0%, 100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.15) translate(2%, -2%);
+    opacity: 0.45;
+  }
+}
+
+.hd-mode-active .bg-grid-pattern {
+  background-size: 30px 30px;
+  background-image: 
+    linear-gradient(to right, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(168, 85, 247, 0.08) 1px, transparent 1px);
+  animation: hdGridDrift 20s linear infinite;
+}
+
+.hd-mode-active .glow-card {
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.hd-mode-active .glow-card:hover {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 35px -5px rgba(34, 211, 238, 0.25), inset 0 0 15px rgba(168, 85, 247, 0.15);
+}
+
+.hd-mode-active .hd-aurora {
+  animation: hdAuroraPulse 12s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Skill Badge Hover Glow Pulse Animations */
+@keyframes skillGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 14px -1px rgba(6, 182, 212, 0.3), 0 0 24px -2px rgba(168, 85, 247, 0.18), inset 0 0 10px rgba(6, 182, 212, 0.05);
+    border-color: rgba(6, 182, 212, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 24px 2px rgba(6, 182, 212, 0.55), 0 0 38px 4px rgba(168, 85, 247, 0.3), inset 0 0 16px rgba(6, 182, 212, 0.12);
+    border-color: rgba(6, 182, 212, 0.75);
+  }
+}
+
+.hover-glow-pulse:hover {
+  animation: skillGlowPulse 2.2s ease-in-out infinite;
+}
+
+.active-glow-pulse {
+  animation: skillGlowPulse 2.2s ease-in-out infinite;
+}
+
+/* Form Controls and Select Option Dark Theming */
+select option {
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+#contact-book-meeting-btn {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+#contact-book-meeting-btn .book-meeting-title {
+  color: #ffffff !important;
+}
+
+#contact-book-meeting-btn .book-meeting-subtitle {
+  color: #cbd5e1 !important;
+}
+
+/* ==========================================================================
+   STANDARDIZED REVEAL-ON-SCROLL ENTRANCE KEYFRAMES & TRANSITIONS
+   ========================================================================== */
+@keyframes sectionRevealEntrance {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+.reveal-section-wrapper {
+  will-change: transform, opacity, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-section-wrapper {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+}
+
+/* ==========================================================================
+   INFINITE SCROLL MARQUEE ANIMATIONS (SKILLS & TECH STACK)
+   ========================================================================== */
+@keyframes marqueeScrollLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes marqueeScrollRight {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  animation: marqueeScrollLeft 36s linear infinite;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  animation: marqueeScrollRight 36s linear infinite;
+}
+
+.marquee-pause-hover:hover .animate-marquee-left,
+.marquee-pause-hover:hover .animate-marquee-right,
+.marquee-paused .animate-marquee-left,
+.marquee-paused .animate-marquee-right {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   PORTFOLIO SKELETON SHIMMER EFFECT
+   ========================================================================== */
+@keyframes skeletonShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: skeletonShimmer 1.8s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-skeleton-shimmer {
+    animation: none !important;
+    display: none !important;
+  }
+}
