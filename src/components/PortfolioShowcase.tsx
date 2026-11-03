@@ -59,6 +59,7 @@ PROJECTS_DATA.forEach((p) => {
     p.badge,
     ...(p.tags || []),
     ...(p.tools || []),
+    ...(p.searchKeywords || []),
     p.description,
     p.descriptionEn,
     ...(p.deliverables || []),
@@ -108,7 +109,7 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
     }
     debounceTimerRef.current = setTimeout(() => {
       setDebouncedSearchQuery(value);
-    }, 250);
+    }, 200);
   }, []);
 
   const handleClearSearch = useCallback(() => {
@@ -268,6 +269,20 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
       const pathname = window.location.pathname.replace(/^\/+|\/+$/g, '').trim();
       const hash = window.location.hash.replace(/^#/, '').trim();
 
+      // Guard: Document verification routes (/result/:id or #/result/:id) are managed at App level.
+      // NEVER overwrite, replace history, or close modal for verification routes.
+      const normalizedPath = pathname.toLowerCase();
+      const normalizedHash = hash.toLowerCase();
+      if (
+        normalizedPath === 'result' ||
+        normalizedPath.startsWith('result/') ||
+        normalizedHash === 'result' ||
+        normalizedHash.startsWith('result/') ||
+        normalizedHash.startsWith('/result')
+      ) {
+        return;
+      }
+
       // 1. Check legacy hash first for backward compatibility (Requirement 6)
       if (hash && (hash.startsWith('project-') || PROJECTS_DATA.some(p => p.id === hash || p.code === hash || `project-${p.id}` === hash))) {
         const hashProject = findProjectByRoute(hash);
@@ -280,6 +295,7 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
 
       // 2. Check path-based URL (e.g. /434 or direct link / refresh)
       if (pathname) {
+
         const pathProject = findProjectByRoute(pathname);
         if (pathProject) {
           setActiveModalProject(pathProject);
@@ -315,7 +331,20 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
     };
   }, [findProjectByRoute]);
 
+  const lastScrollYRef = useRef<number | null>(null);
+
+  // Dynamic document title per project page & reset on close
+  useEffect(() => {
+    if (activeModalProject) {
+      const title = activeModalProject.titleEn || activeModalProject.title;
+      document.title = `${title} | Ardi Ulinnuha Portfolio`;
+    } else {
+      document.title = 'Ardi Ulinnuha - Portfolio';
+    }
+  }, [activeModalProject]);
+
   const handleOpenModal = useCallback((project: Project) => {
+    lastScrollYRef.current = typeof window !== 'undefined' ? window.scrollY : null;
     try {
       soundManager.playModalOpen();
     } catch {}
@@ -337,6 +366,12 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
         window.history.pushState({ modalOpen: false }, '', '/');
       }
     } catch {}
+    if (lastScrollYRef.current !== null && typeof window !== 'undefined') {
+      const savedY = lastScrollYRef.current;
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: savedY, behavior: 'instant' as ScrollBehavior });
+      });
+    }
   }, []);
 
   // Active list of projects for modal navigation (prefer current filtered list if it has > 1 project, otherwise all projects)
@@ -391,8 +426,8 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
   return (
     <section id="portfolio" className="py-24 relative bg-transparent overflow-hidden">
       {/* Background Decorative Gradients */}
-      <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-1/4 right-0 w-64 h-64 sm:w-[500px] sm:h-[500px] max-w-full bg-purple-600/10 rounded-full blur-[60px] sm:blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute bottom-1/4 left-0 w-64 h-64 sm:w-[500px] sm:h-[500px] max-w-full bg-cyan-600/10 rounded-full blur-[60px] sm:blur-[120px] pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -552,7 +587,7 @@ export const PortfolioShowcase: React.FC<PortfolioShowcaseProps> = ({
               onMouseMove={handlePortMouseMove}
               onMouseUp={handlePortMouseUp}
               onMouseLeave={handlePortMouseLeave}
-              className={`flex items-center gap-2.5 overflow-x-auto scrollbar-hide select-none py-1.5 px-4 sm:px-1 -mx-4 sm:mx-0 w-full lg:w-auto min-w-0 flex-1 ${
+              className={`flex items-center gap-2.5 overflow-x-auto scrollbar-hide select-none py-1.5 px-4 sm:px-1 -mx-4 sm:mx-0 w-[calc(100%+2rem)] sm:w-auto max-w-[calc(100%+2rem)] sm:max-w-none min-w-0 flex-1 ${
                 isPortfolioDragging ? 'cursor-grabbing' : 'cursor-grab'
               }`}
               style={{ WebkitOverflowScrolling: 'touch' }}

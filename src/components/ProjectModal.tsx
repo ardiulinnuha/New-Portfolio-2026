@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { Project, ProjectGalleryItem } from '../types';
 import { YouTubeIcon } from './YouTubeIcon';
+import { YouTubeFacade } from './YouTubeFacade';
 import { LazyImage } from './LazyImage';
 import { RoadmapVisualizer } from './RoadmapVisualizer';
 import { ShareButton } from './ShareButton';
@@ -599,7 +600,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             <h4 className="text-xs uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400 font-bold mb-2">
               PROJECT OVERVIEW & PROCESS
             </h4>
-            <p className="text-xs sm:text-sm text-slate-700 dark:text-gray-300 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-slate-700 dark:text-gray-300 leading-relaxed font-normal whitespace-pre-line">
               {displayedDescription}
             </p>
           </div>
@@ -715,17 +716,13 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                     {galleryItems[0] && renderPreviewCard(galleryItems[0], 0, 'aspect-video', 1920, 1080)}
                   </div>
 
-                  {/* 2. Di bawah gambar tersebut, embed video YouTube portrait (vertikal) */}
+                  {/* 2. Di bawah gambar tersebut, embed video YouTube portrait (vertikal) via YouTubeFacade */}
                   <div className="pt-2">
-                    <div className="w-full max-w-[380px] mx-auto aspect-[9/16] rounded-xl sm:rounded-2xl overflow-hidden dark:border-white/10 border-slate-200 border bg-black shadow-2xl">
-                      <iframe
-                        className="w-full h-full border-0"
-                        src="https://www.youtube.com/embed/oI-P1kRf9c0"
+                    <div className="w-full max-w-[380px] mx-auto">
+                      <YouTubeFacade
+                        videoUrlOrId="oI-P1kRf9c0"
                         title="Muslim Chaplaincy: Solusi Krisis Kesehatan Mental & Spiritual Indonesia"
-                        loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
+                        aspectRatioClass="aspect-[9/16]"
                       />
                     </div>
                   </div>
@@ -878,18 +875,55 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 </span>
               </div>
 
-              {/* Responsive 16:9 Container with 100% width */}
-              <div className="w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden dark:border-white/10 border-slate-200 border bg-black shadow-xl">
-                <iframe
-                  className="w-full h-full border-0"
-                  src={youtubeEmbedUrl}
-                  title="YouTube video player"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              </div>
+              {/* Responsive 16:9 Container with YouTubeFacade */}
+              <YouTubeFacade
+                videoUrlOrId={youtubeEmbedUrl}
+                title={`Watch ${displayedTitle} on YouTube`}
+                aspectRatioClass="aspect-video"
+              />
+
+              {(project.websiteUrl || project.youtubeUrl || project.hackathonUrl) && (
+                <div className="mt-4 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center sm:justify-start gap-2.5 sm:gap-3">
+                  {project.websiteUrl && (
+                    <a
+                      href={project.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full bg-cyan-500 text-black hover:bg-cyan-400 font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    >
+                      <Globe className="w-3.5 h-3.5 shrink-0" />
+                      <span>Visit Live Website</span>
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                    </a>
+                  )}
+
+                  {project.youtubeUrl && (
+                    <a
+                      href={project.youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full font-black text-xs uppercase tracking-wider shadow-md transition-all bg-[#111111] hover:bg-[#222222] text-white border border-neutral-800 dark:border-white/10 cursor-pointer hover:scale-105 active:scale-95"
+                    >
+                      <YouTubeIcon className="w-4 h-4 text-white shrink-0" variant="white" />
+                      <span>Watch on YouTube</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-white shrink-0" />
+                    </a>
+                  )}
+
+                  {project.hackathonUrl && (
+                    <a
+                      href={project.hackathonUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full bg-slate-900 text-white hover:bg-cyan-500 dark:bg-white dark:text-black dark:hover:bg-cyan-400 font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                      <span>AI BUILDER CUP</span>
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -968,13 +1002,13 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           )}
 
           {/* Action Links */}
-          {(project.websiteUrl || project.behanceUrl || project.youtubeUrl) ? (
+          {(project.websiteUrl || project.behanceUrl || project.youtubeUrl || project.hackathonUrl) ? (
             <div className="pt-4 border-t dark:border-white/10 border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="text-xs text-slate-500 dark:text-gray-400 font-mono">
                 Interested in similar creative deliverables?
               </div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
                 {project.websiteUrl && (
                   <a
                     href={project.websiteUrl}
@@ -983,7 +1017,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                     className="flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full bg-cyan-500 text-black hover:bg-cyan-400 font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95"
                   >
                     <Globe className="w-3.5 h-3.5 shrink-0" />
-                    <span>Visit Website</span>
+                    <span>{project.websiteUrl.includes('ai.studio') ? 'Visit Live Website' : 'Visit Website'}</span>
                     <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                   </a>
                 )}
@@ -1000,16 +1034,29 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   </a>
                 )}
 
-                {!project.websiteUrl && project.youtubeUrl && (
+                {project.youtubeUrl && (
                   <a
                     href={project.youtubeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full font-black text-xs uppercase tracking-wider shadow-md transition-all bg-[#111111] hover:bg-[#222222] text-white border border-neutral-800 dark:border-white/10 cursor-pointer"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full font-black text-xs uppercase tracking-wider shadow-md transition-all bg-[#111111] hover:bg-[#222222] text-white border border-neutral-800 dark:border-white/10 cursor-pointer hover:scale-105 active:scale-95"
                   >
                     <YouTubeIcon className="w-4 h-4 text-white shrink-0" variant="white" />
                     <span>Watch on YouTube</span>
                     <ExternalLink className="w-3.5 h-3.5 text-white shrink-0" />
+                  </a>
+                )}
+
+                {project.hackathonUrl && (
+                  <a
+                    href={project.hackathonUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] w-full sm:w-auto rounded-full bg-slate-900 text-white hover:bg-cyan-500 dark:bg-white dark:text-black dark:hover:bg-cyan-400 font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                    <span>AI BUILDER CUP</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                   </a>
                 )}
               </div>

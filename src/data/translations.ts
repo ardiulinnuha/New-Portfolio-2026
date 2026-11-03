@@ -38,7 +38,7 @@ export const TRANSLATIONS: Record<'en' | 'id', TranslationSchema> = {
       codeYourPath: 'Code Your Path',
     },
     certifications: {
-      googleAiTitle: 'Google AI Professional Certificate',
+      googleAiTitle: 'Google AI Professional',
     },
     modal: {
       protectedMediaLabel: 'Protected Media:',
@@ -59,7 +59,7 @@ export const TRANSLATIONS: Record<'en' | 'id', TranslationSchema> = {
       codeYourPath: 'Code Your Path',
     },
     certifications: {
-      googleAiTitle: 'Google AI Professional Certificate',
+      googleAiTitle: 'Google AI Professional',
     },
     modal: {
       protectedMediaLabel: 'Protected Media:',

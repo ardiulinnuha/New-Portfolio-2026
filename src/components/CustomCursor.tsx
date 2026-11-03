@@ -145,10 +145,11 @@ export const CustomCursor: React.FC = () => {
   const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if pointer is touch/coarse or hover is unavailable
+    // Check if pointer is touch/coarse, hover unavailable, or reduced motion enabled
     if (typeof window !== 'undefined') {
       const isCoarse = window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches;
-      if (isCoarse) {
+      const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (isCoarse || isReduced) {
         if (containerRef.current) containerRef.current.style.display = 'none';
         return;
       }
@@ -414,11 +415,22 @@ export const CustomCursor: React.FC = () => {
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        isRunning = false;
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       if (rafId !== null) cancelAnimationFrame(rafId);
@@ -427,6 +439,7 @@ export const CustomCursor: React.FC = () => {
       window.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 

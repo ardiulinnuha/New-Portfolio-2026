@@ -144,13 +144,13 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-            className="fixed top-0 right-0 bottom-0 w-[86vw] max-w-[360px] sm:max-w-[400px] h-[100dvh] bg-[#070709] border-l border-white/10 shadow-2xl shadow-black flex flex-col justify-between overflow-hidden"
+            className="fixed top-0 right-0 bottom-0 w-[88vw] max-w-[360px] sm:max-w-[400px] h-[100dvh] bg-[#070709] border-l border-white/10 shadow-2xl shadow-black flex flex-col justify-between overflow-hidden pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]"
           >
             {/* Top Accent Gradient Line */}
             <div className="h-1 w-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 shrink-0" />
 
             {/* Drawer Header */}
-            <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-white/10 flex items-center justify-between bg-[#0a0a0d] shrink-0">
+            <div className="px-5 py-3.5 sm:px-6 sm:py-5 border-b border-white/10 flex items-center justify-between bg-[#0a0a0d] shrink-0">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-2xl bg-gradient-to-tr from-cyan-500 via-purple-600 to-purple-800 p-[1.5px] shrink-0 shadow-md shadow-purple-500/20 overflow-hidden">
                   <div className="w-full h-full rounded-[14px] overflow-hidden flex items-center justify-center bg-[#050505] text-[0px] leading-[0]">
@@ -178,13 +178,13 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 </div>
               </div>
 
-              {/* Accessible Close Button (>=44px touch target) */}
+              {/* Accessible Close Button (>=48px touch target) */}
               <button
                 ref={closeButtonRef}
                 id="mobile-drawer-close-btn"
                 type="button"
                 onClick={handleCloseClick}
-                className="w-11 h-11 rounded-xl flex items-center justify-center border transition-colors bg-[#0f0f13] border-white/10 text-gray-300 hover:text-white hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 cursor-pointer shrink-0"
+                className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl flex items-center justify-center border transition-colors bg-[#0f0f13] border-white/10 text-gray-300 hover:text-white hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 cursor-pointer shrink-0 active:scale-95"
                 aria-label="Close navigation drawer"
               >
                 <X className="w-5 h-5" />
@@ -253,7 +253,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             </nav>
 
             {/* Drawer Footer & Quick Connect */}
-            <div className="p-4 sm:p-5 border-t border-white/10 bg-[#0a0a0d] shrink-0 space-y-3">
+            <div className="p-4 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] border-t border-white/10 bg-[#0a0a0d] shrink-0 space-y-3">
               {/* Primary WhatsApp CTA */}
               <a
                 id="drawer-whatsapp-btn"

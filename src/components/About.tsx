@@ -86,6 +86,7 @@ export const About: React.FC = () => {
                     width={48}
                     height={48}
                     loading="eager"
+                    fetchPriority="high"
                     decoding="async"
                     draggable={false}
                     onContextMenu={(e) => e.preventDefault()}

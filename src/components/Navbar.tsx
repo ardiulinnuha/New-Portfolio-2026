@@ -137,8 +137,8 @@ export const Navbar: React.FC = () => {
     const el = document.getElementById(targetId);
     if (el) {
       const navbarEl = document.getElementById('main-navbar');
-      const navHeight = navbarEl ? navbarEl.getBoundingClientRect().height : (window.innerWidth < 640 ? 64 : 76);
-      const extraGutter = window.innerWidth < 640 ? 10 : window.innerWidth < 1024 ? 14 : 18;
+      const navHeight = navbarEl ? navbarEl.getBoundingClientRect().height : (window.innerWidth < 640 ? 56 : 76);
+      const extraGutter = window.innerWidth < 640 ? 8 : window.innerWidth < 1024 ? 14 : 18;
       const totalOffset = navHeight + extraGutter;
 
       const elementPosition = el.getBoundingClientRect().top;
@@ -154,22 +154,22 @@ export const Navbar: React.FC = () => {
   return (
     <header 
       id="main-navbar"
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 pt-[env(safe-area-inset-top,0px)] ${
         isScrolled 
-          ? 'bg-[#050505]/90 backdrop-blur-xl border-b border-white/10 py-3 shadow-2xl shadow-black/60' 
-          : 'bg-transparent py-5 border-b border-transparent'
+          ? 'bg-[#050505]/95 backdrop-blur-xl border-b border-white/10 py-2 sm:py-3 shadow-2xl shadow-black/60' 
+          : 'bg-transparent py-2.5 sm:py-5 border-b border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Brand Logo */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between min-h-[44px]">
+        {/* Brand Logo: Avatar, Name, and Available Badge on 1 line without wrapping */}
         <a 
           id="navbar-brand-logo"
           href="#hero" 
           onClick={(e) => handleNavClick(e, 'hero')}
-          className="flex items-center gap-3 group focus:outline-none cursor-pointer"
+          className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none cursor-pointer min-w-0 flex-1 sm:flex-initial mr-2"
         >
-          <div className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-2xl bg-gradient-to-tr from-cyan-500 via-purple-600 to-purple-800 p-[1.5px] shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden shrink-0">
-            <div className="w-full h-full rounded-[14px] overflow-hidden flex items-center justify-center bg-[#050505] text-[0px] leading-[0]">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 min-w-[32px] min-h-[32px] sm:min-w-[40px] sm:min-h-[40px] rounded-xl sm:rounded-2xl bg-gradient-to-tr from-cyan-500 via-purple-600 to-purple-800 p-[1.5px] shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform duration-300 overflow-hidden shrink-0">
+            <div className="w-full h-full rounded-[10px] sm:rounded-[14px] overflow-hidden flex items-center justify-center bg-[#050505] text-[0px] leading-[0]">
               <img
                 src={profileAvatar}
                 alt={PERSONAL_INFO.name}
@@ -185,13 +185,13 @@ export const Navbar: React.FC = () => {
               />
             </div>
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-display font-black text-base sm:text-lg tracking-tight uppercase transition-colors text-white group-hover:text-cyan-400">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="font-display font-black text-sm sm:text-base lg:text-lg tracking-tight uppercase transition-colors text-white group-hover:text-cyan-400 truncate">
                 {PERSONAL_INFO.name}
               </span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border font-mono bg-white/10 text-cyan-300 border-white/10">
-                <span className="w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse bg-cyan-400"></span>
+              <span className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-bold uppercase tracking-wider border font-mono bg-white/10 text-cyan-300 border-white/10 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full mr-1 animate-pulse bg-cyan-400"></span>
                 Available
               </span>
             </div>
@@ -240,7 +240,7 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Mobile Hamburger Toggle (Accessible, >=44px touch target) */}
-        <div className="flex items-center lg:hidden">
+        <div className="flex items-center lg:hidden shrink-0">
           <button
             id="mobile-menu-toggle"
             type="button"
@@ -250,7 +250,7 @@ export const Navbar: React.FC = () => {
               } catch {}
               setMobileMenuOpen(!mobileMenuOpen);
             }}
-            className="w-11 h-11 rounded-xl border transition-colors bg-[#0f0f0f] border-white/10 text-gray-300 hover:text-white hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 cursor-pointer flex items-center justify-center shrink-0"
+            className="w-10 h-10 sm:w-11 sm:h-11 min-h-[44px] min-w-[44px] rounded-xl border transition-colors bg-[#0f0f0f] border-white/10 text-gray-300 hover:text-white hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
             aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-nav-drawer"

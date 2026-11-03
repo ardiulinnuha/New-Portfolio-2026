@@ -53,8 +53,29 @@ export const ProjectCard: React.FC<ProjectCardProps> = memo(({ project, onOpenMo
   const rectRef = useRef<DOMRect | null>(null);
   const rafIdRef = useRef<number | null>(null);
 
+  // Prefetch project modal chunk and hero image on hover/focus for instant 0ms perceived opening
+  const prefetchProject = () => {
+    try {
+      import('./ProjectModal');
+      if (project.imageUrl && typeof window !== 'undefined') {
+        const img = new Image();
+        img.src = project.imageUrl;
+      }
+    } catch {}
+  };
+
+  // Clean up any pending RAF on unmount
+  React.useEffect(() => {
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, []);
+
   const handleMouseEnter = () => {
     soundManager.playCardHover();
+    prefetchProject();
     if (cardRef.current) {
       rectRef.current = cardRef.current.getBoundingClientRect();
     }
@@ -144,6 +165,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = memo(({ project, onOpenMo
         <div 
           className="relative w-full aspect-video min-h-[180px] bg-[#0c0d12] flex flex-col justify-between overflow-hidden cursor-pointer select-none"
           onClick={handleCardClick}
+          onFocus={prefetchProject}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
@@ -266,7 +288,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = memo(({ project, onOpenMo
                     <span className="font-bold text-xs text-cyan-400">Bē</span>
                   </a>
                 )}
-                {!project.websiteUrl && project.youtubeUrl && (
+                {project.youtubeUrl && (
                   <a
                     href={project.youtubeUrl}
                     target="_blank"

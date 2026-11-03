@@ -78,6 +78,9 @@ export interface Project {
   behanceEmbedUrl?: string;
   youtubeUrl?: string;
   websiteUrl?: string;
+  hackathonUrl?: string;
+  hackathonLabel?: string;
+  searchKeywords?: string[];
   gallery?: ProjectGalleryItem[];
   deliverables: string[];
   deliverablesEn: string[];
@@ -122,8 +125,13 @@ export interface CertificationItem {
   categoryLabelEn: string;
   description: string;
   descriptionEn: string;
+  syllabus?: string;
+  syllabusEn?: string;
+  earningCriteria?: string;
+  credentialType?: string;
   credentialUrl: string;
   skillsAcquired: string[];
+  competencies?: string[];
 }
 
 export interface AwardItem {

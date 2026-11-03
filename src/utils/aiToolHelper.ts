@@ -17,6 +17,7 @@ export const isAiTool = (toolName: string): boolean => {
     n.includes('pika') ||
     n.includes('midjourney') ||
     n.includes('prompt engineering') ||
+    n.includes('vibe coding') ||
     n.includes('elevenlabs')
   );
 };

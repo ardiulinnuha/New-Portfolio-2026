@@ -9,39 +9,42 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Mobile base scroll padding for sticky header compensation */
-    scroll-padding-top: 4.75rem;
+    /* Mobile base scroll padding for sticky header compensation (~56px) */
+    scroll-padding-top: 3.75rem;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
   }
 
   @media (min-width: 640px) {
     html {
-      scroll-padding-top: 5.25rem;
+      scroll-padding-top: 4.75rem;
     }
   }
 
   @media (min-width: 1024px) {
     html {
-      scroll-padding-top: 5.75rem;
+      scroll-padding-top: 5.25rem;
     }
   }
 
   /* Consistent scroll margin for targetable ID sections */
   section[id],
   div[id].scroll-target {
-    scroll-margin-top: 4.75rem;
+    scroll-margin-top: 3.75rem;
   }
 
   @media (min-width: 640px) {
     section[id],
     div[id].scroll-target {
-      scroll-margin-top: 5.25rem;
+      scroll-margin-top: 4.75rem;
     }
   }
 
   @media (min-width: 1024px) {
     section[id],
     div[id].scroll-target {
-      scroll-margin-top: 5.75rem;
+      scroll-margin-top: 5.25rem;
     }
   }
 
@@ -49,6 +52,12 @@
     font-family: var(--font-sans);
     background-color: #050505;
     color: #e5e7eb;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   
   h1, h2, h3, h4, .font-display {
@@ -57,6 +66,12 @@
 
   code, pre, .font-mono {
     font-family: var(--font-mono);
+  }
+
+  /* Accessible touch targets & tap interaction */
+  button, a, input, select, textarea, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 }
 
@@ -379,3 +394,75 @@ select option {
     display: none !important;
   }
 }
+
+/* Certificate Card Justified Description with Narrow-Screen Fallback */
+.cert-card-desc {
+  text-align: left;
+  text-justify: inter-word;
+  hyphens: none;
+  -webkit-hyphens: none;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+@media (min-width: 420px) {
+  .cert-card-desc {
+    text-align: justify;
+  }
+}
+
+/* Safe Area Insets Helpers */
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+.pl-safe {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+}
+.pr-safe {
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+/* Mobile Performance & 60fps Scrolling Ergonomics */
+@media (max-width: 639px) {
+  .hd-aurora {
+    filter: blur(50px) !important;
+    opacity: 0.5 !important;
+  }
+}
+
+/* Mobile Touch Device: prevent sticky hover transforms */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:-translate-y-1:hover,
+  .hover\:-translate-y-1\.5:hover,
+  .hover\:-translate-y-2:hover,
+  .hover\:scale-105:hover,
+  .hover\:scale-\[1\.015\]:hover,
+  .hover\:scale-\[1\.02\]:hover,
+  .hover\:scale-\[1\.03\]:hover {
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   PERFORMANCE: CONTENT-VISIBILITY FOR BELOW-THE-FOLD SECTIONS
+   ========================================================================== */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 750px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+

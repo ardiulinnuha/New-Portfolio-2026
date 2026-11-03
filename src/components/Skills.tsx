@@ -24,6 +24,34 @@ import {
   Code
 } from 'lucide-react';
 
+// Pre-indexed search corpus maps for O(1) keyword lookup in skills
+const SKILL_CAT_CORPUS = new Map<string, string>();
+const SKILL_ITEM_CORPUS = new Map<string, string>();
+
+SKILL_CATEGORIES.forEach((cat) => {
+  const catText = [
+    cat.id,
+    cat.title,
+    cat.titleEn,
+    cat.description,
+    cat.descriptionEn,
+    ...cat.skills.flatMap((s) => [s.name, s.badge, s.description, s.descriptionEn, s.workflow, s.workflowEn]),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  SKILL_CAT_CORPUS.set(cat.id, catText);
+
+  cat.skills.forEach((s) => {
+    const itemKey = `${cat.id}::${s.name}`;
+    const itemText = [s.name, s.badge, s.description, s.descriptionEn, s.workflow, s.workflowEn]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    SKILL_ITEM_CORPUS.set(itemKey, itemText);
+  });
+});
+
 const skillsContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -76,9 +104,37 @@ export const Skills: React.FC<SkillsProps> = ({
   activeSkillFilter = null
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchInputValue, setSearchInputValue] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+  const searchDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hoveredSkill, setHoveredSkill] = useState<HoveredSkillState | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchInputValue(value);
+    if (searchDebounceTimerRef.current) {
+      clearTimeout(searchDebounceTimerRef.current);
+    }
+    searchDebounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(value);
+    }, 200);
+  }, []);
+
+  const handleClearSearch = useCallback(() => {
+    if (searchDebounceTimerRef.current) {
+      clearTimeout(searchDebounceTimerRef.current);
+    }
+    setSearchInputValue('');
+    setDebouncedSearchQuery('');
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (searchDebounceTimerRef.current) {
+        clearTimeout(searchDebounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Draggable scroll hook for category tabs
   const {
@@ -379,16 +435,15 @@ export const Skills: React.FC<SkillsProps> = ({
   }, [allSkillsList]);
 
   const filteredCategories = useMemo(() => {
+    const q = debouncedSearchQuery.trim().toLowerCase();
     return SKILL_CATEGORIES.filter((cat) => {
       if (selectedCategory !== 'all' && cat.id !== selectedCategory) return false;
-      if (!searchQuery.trim()) return true;
+      if (!q) return true;
 
-      const q = searchQuery.toLowerCase();
-      const matchesCat = (cat.titleEn || cat.title).toLowerCase().includes(q);
-      const matchesSkill = cat.skills.some((s) => s.name.toLowerCase().includes(q) || (s.badge && s.badge.toLowerCase().includes(q)));
-      return matchesCat || matchesSkill;
+      const catCorpus = SKILL_CAT_CORPUS.get(cat.id) || '';
+      return catCorpus.includes(q);
     });
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, debouncedSearchQuery]);
 
   return (
     <section id="skills" className="py-16 sm:py-24 relative bg-transparent overflow-hidden">
@@ -644,7 +699,7 @@ export const Skills: React.FC<SkillsProps> = ({
               onMouseMove={handleCatMouseMove}
               onMouseUp={handleCatMouseUp}
               onMouseLeave={handleCatMouseLeave}
-              className={`flex items-center gap-2 overflow-x-auto scrollbar-hide select-none py-1 px-4 sm:px-1 -mx-4 sm:mx-0 w-full lg:w-auto min-w-0 flex-1 ${
+              className={`flex items-center gap-2 overflow-x-auto scrollbar-hide select-none py-1 px-4 sm:px-1 -mx-4 sm:mx-0 w-[calc(100%+2rem)] sm:w-auto max-w-[calc(100%+2rem)] sm:max-w-none min-w-0 flex-1 ${
                 isCategoryDragging ? 'cursor-grabbing' : 'cursor-grab'
               }`}
               style={{ WebkitOverflowScrolling: 'touch' }}
@@ -685,19 +740,19 @@ export const Skills: React.FC<SkillsProps> = ({
           </div>
 
           {/* Quick Search Field with Adequate Width & Padding */}
-          <div className="relative w-full lg:w-72 sm:w-auto min-w-[280px] shrink-0">
+          <div className="relative w-full lg:w-72 sm:w-auto min-w-0 sm:min-w-[260px] shrink-0">
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               id="skills-search-input"
               type="text"
               placeholder="Search skills, software..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchInputValue}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-10 pr-9 py-2 rounded-full bg-[#0f0f0f] border border-white/10 text-xs text-white placeholder:text-gray-500 focus:outline-none focus:border-cyan-400/50 transition-colors font-mono"
             />
-            {searchQuery && (
+            {searchInputValue && (
               <button
-                onClick={() => setSearchQuery('')}
+                onClick={handleClearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
                 title="Clear search"
               >
@@ -709,7 +764,7 @@ export const Skills: React.FC<SkillsProps> = ({
 
         {/* Skills Categories Grid with CSS Grid auto-fit and Staggered Motion */}
         <motion.div 
-          key={`${selectedCategory}-${searchQuery}`}
+          key={`${selectedCategory}-${debouncedSearchQuery}`}
           variants={skillsContainerVariants}
           initial="hidden"
           whileInView="visible"
@@ -751,9 +806,10 @@ export const Skills: React.FC<SkillsProps> = ({
                   >
                     {category.skills
                       .filter((s) => {
-                        if (!searchQuery.trim()) return true;
-                        const q = searchQuery.toLowerCase();
-                        return s.name.toLowerCase().includes(q) || (s.badge && s.badge.toLowerCase().includes(q));
+                        const q = debouncedSearchQuery.trim().toLowerCase();
+                        if (!q) return true;
+                        const itemCorpus = SKILL_ITEM_CORPUS.get(`${category.id}::${s.name}`) || '';
+                        return itemCorpus.includes(q);
                       })
                       .map((skill, idx) => {
                         const isActive = activeSkillFilter === skill.name;
